@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  keycloak:
+    image: acme/keycloak
+    container_name: acme-keycloak
+    environment:
+      # ADMIN_PASSWORD=admin
+      - ADMIN_PASSWORD_SALT=37zwO+8KHipVlKraZnTNkw==
+      - ADMIN_PASSWORD_VALUE=ozClO6MhM3KKOJWnRbrIfH9IMt9ZFRHi9ezWihSeTOU1OC0bl/t46WA00UtvwloCi9dY7XFAjoh7QKRogS4llg==
+      # ADMIN_REST_PASSWORD=admin-rest
+      - ADMIN_REST_PASSWORD_SALT=Rn7NdGKksrJg6+aRlQYSgw==
+      - ADMIN_REST_PASSWORD_VALUE=miqdsYDrRrb7e9xv71sY9y/YlMAE108PW/oZ8WeHytrFAiaqpG8LmhUt85bWmdFf4TsL6uY5PfVNBP6Wq4cgng==
+      - DB_VENDOR=postgres
+      - DB_DATABASE=keycloak
+      - DB_USER=keycloak
+      - DB_PASSWORD=mysecretKCpassword
+      - DB_ADDR=keycloak-database
+    ports:
+      - 8081:8081
+    depends_on:
+      - keycloak-database
+    networks:
+      acme:
+
+  keycloak-database:
+    image: postgres:12.3
+    container_name: acme-keycloak-database
+    environment:
+      - POSTGRES_DATABASE=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=mysecretKCpassword
+      - POSTGRES_ROOT_PASSWORD=my_KC_root_password
+    ports:
+      - 5432:5432
+    volumes:
+      - keycloak-database:/var/lib/postgresql/data
+    networks:
+      - acme
+
+volumes:
+  keycloak-database:
+
+networks:
+  acme:
